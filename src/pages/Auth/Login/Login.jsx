@@ -57,7 +57,7 @@ const Login = () => {
           >
             &nbsp;
           </div> */}
-          <ToastContainer />
+
           <div className="w-full flex justify-center items-center">
             <div className="w-4/12">
               <h1 className="text-center text-[45px] leading-[55px] text-[#4abef1] pb-8">

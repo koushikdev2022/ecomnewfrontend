@@ -25,7 +25,7 @@ export const loadEditor = createAsyncThunk(
   'editor/load-editor',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/product/list-template/${4}`);
+      const response = await api.get(`/product/list-template/${3}`);
       // console.log('response', response);
       if (response?.data?.status_code === 200) {
         return response?.data;
@@ -46,7 +46,7 @@ export const saveEditor = createAsyncThunk(
     try {
       console.log("Data: ", data);
 
-      const response = await api.post(`/product/save-template/${4}`, {
+      const response = await api.post(`/product/save-template/${3}`, {
         data: data,
       });
       if (response?.data?.status_code === 200) {

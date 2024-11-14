@@ -13,7 +13,9 @@ import { loadStripe } from "@stripe/stripe-js";
 import { getStripeSecrate } from "../../Reducer/PaymentSlice";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
-
+import { couponValidate } from "../../Reducer/CouponSlice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const TemplateByProduct = () => {
   const { data } = useSelector((state) => state?.usereditors);
   const productId = useParams();
@@ -46,7 +48,7 @@ const TemplateByProduct = () => {
   const [subscription, setSubscription] = useState();
   const [stripe, setStripe] = useState(null);
   const [paypal, setPaypal] = useState(null);
-  const [oneTime, setOnetime] = useState();
+  const [oneTime, setOnetime] = useState(null);
   const [stripejs, setStripejs] = useState(null);
   const [cardElement, setCardElement] = useState(null);
   const [clientSecret, setClientSecrate] = useState(null);
@@ -60,9 +62,49 @@ const TemplateByProduct = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [productName, setProductName] = useState(null);
+
+  const [couponCode, setCouponCode] = useState(null);
+  const [calculatedPrice, setCalculatedPrice] = useState();
+  const [isCouponApply, setIsCouponApply] = useState(false);
   // let stripejs;
   // let cardElement;
-
+  useEffect(() => {
+    if (couponCode !== null && priceId !== null) {
+      // alert(couponCode);
+      // alert(priceId);
+      dispatch(
+        couponValidate({
+          coupon_code: couponCode,
+          product_id: productId?.id,
+          price_id: priceId,
+        })
+      ).then((res) => {
+        console.log("Coupon", res);
+        if (res?.payload?.status_code === 400) {
+          toast.error(res?.payload?.message, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        } else if (res?.payload?.status_code === 200) {
+          toast.success(res?.payload?.message, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            progress: undefined,
+            theme: "light",
+          });
+          console.log("oneTime", oneTime);
+          setCalculatedPrice(res?.payload?.calculatedPrice);
+          setIsCouponApply(true);
+        }
+      });
+    }
+  }, [couponCode, priceId]);
   useEffect(() => {}, [html, stripeKey]);
   useEffect(() => {
     dispatch(getProductList({ id: productId?.id, page: 1, limit: 10 })).then(
@@ -71,9 +113,14 @@ const TemplateByProduct = () => {
         setUserId(res?.payload?.data?.[0]?.user_id);
         setPaypal(res?.payload?.data?.[0]?.paypal);
         setStripe(res?.payload?.data?.[0]?.stripe);
-        setPaymentAmount(
-          res?.payload?.data?.[0]?.productPriceData?.[0]?.one_type_payment_price
-        );
+        if (isCouponApply) {
+          setPaymentAmount(calculatedPrice);
+        } else {
+          setPaymentAmount(
+            res?.payload?.data?.[0]?.productPriceData?.[0]
+              ?.one_type_payment_price
+          );
+        }
         setAvailablePaymentProviders(
           res?.payload?.data?.[0]?.paymentProviders?.[0]?.provider_type
         );
@@ -131,7 +178,7 @@ const TemplateByProduct = () => {
         });
       }
     );
-  }, [dispatch]);
+  }, [dispatch, isCouponApply]);
   console.log("Data: ", data?.data?.[0]?.data);
   const coupons = [
     { code: "STEALDEAL20" },
@@ -245,14 +292,27 @@ const TemplateByProduct = () => {
       if (coupon) {
         coupon.style.display = "none";
       }
+      if (document.getElementById("couponOpen")) {
+        document.getElementById("couponOpen").onclick = function () {
+          coupon.style.display = "";
+          let couponOpen = document.getElementById("cpnLink");
+          if (couponOpen) {
+            couponOpen.style.display = "none";
+          }
+        };
+      }
 
-      document.getElementById("couponOpen").onclick = function () {
-        coupon.style.display = "";
-        let couponOpen = document.getElementById("cpnLink");
-        if (couponOpen) {
-          couponOpen.style.display = "none";
-        }
-      };
+      let applyCoupon = document.getElementById("applyCoupon");
+      if (applyCoupon) {
+        applyCoupon.onclick = function () {
+          let coupon_code = document.getElementById("coupon_code");
+          if (coupon_code) {
+            let newValue = coupon_code.value;
+            setCouponCode(newValue);
+          }
+          // dispatch(couponValidate({ product_id: productId?.id }));
+        };
+      }
       let pricingElement = document.getElementById("pricingBoth");
       let couponElement = document.getElementById("couponList");
 
@@ -427,10 +487,15 @@ const TemplateByProduct = () => {
       if (!subscription?.subscription_base_price) {
         document.getElementById("subscriptionHide").style.display = "none";
         document.querySelector('input[id="annual_opt"]:checked');
+
         if (document.getElementById("orderAmount")) {
-          document.getElementById(
-            "orderAmount"
-          ).innerHTML = `$${oneTime?.one_type_payment_price}`;
+          // alert("onetime", oneTime?.one_type_payment_price);
+          // alert("calculated", calculatedPrice);
+          console.log("isCouponApply", isCouponApply);
+
+          document.getElementById("orderAmount").innerHTML = `$${
+            isCouponApply ? calculatedPrice : oneTime?.one_type_payment_price
+          }`;
           const leftPrice = document.getElementById(
             "cart_wrap_name_list_left_price"
           );
@@ -447,9 +512,9 @@ const TemplateByProduct = () => {
         }
 
         if (document.getElementById("orderAmount-2")) {
-          document.getElementById(
-            "orderAmount-2"
-          ).innerHTML = `$${oneTime?.one_type_payment_price}`;
+          document.getElementById("orderAmount-2").innerHTML = `$${
+            isCouponApply ? calculatedPrice : oneTime?.one_type_payment_price
+          }`;
           const leftPrice = document.getElementById(
             "cart_wrap_name_list_left_price"
           );
@@ -558,7 +623,16 @@ const TemplateByProduct = () => {
         console.log("paypal-radio element not found");
       }
     }
-  }, [html, oneTime, subscription, stripe, paypal, stripeKey, paypalKey]); // Add dependencies only for relevant data, not for stripejs
+  }, [
+    html,
+    oneTime,
+    subscription,
+    stripe,
+    paypal,
+    stripeKey,
+    paypalKey,
+    isCouponApply,
+  ]); // Add dependencies only for relevant data, not for stripejs
   useEffect(() => {
     if (stripeKey) {
       // Initialize stripePromise only once when stripeKey is available

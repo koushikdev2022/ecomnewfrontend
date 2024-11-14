@@ -38,6 +38,7 @@ import TemplateByProduct from '../pages/TemplateRedirectionPage/TempalteByProduc
 import PaymentRedirect from '../pages/TemplateRedirectionPage/PaymentRedirect.jsx';
 import MiddlePage from '../pages/TemplateRedirectionPage/MiddlePage.jsx';
 import Profile from '../pages/Profile/Profile.jsx';
+import ResetPassword from '../pages/Auth/ForgotPassword/ResetPassword.jsx';
 
 
 const allRoutes = [
@@ -55,6 +56,14 @@ const allRoutes = [
     children: [
       { index: true, element: <ForgotPassword /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
+    ],
+  },
+  {
+    path: '/reset-password/:token',
+    element: <OutsideLayout />,
+    children: [
+      { index: true, element: <ResetPassword /> },
+      { path: 'reset-password', element: <ResetPassword /> },
     ],
   },
   {
