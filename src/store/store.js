@@ -16,6 +16,7 @@ import ProductTemplateSlice from '../Reducer/ProductTemplateSlice';
 import RevenueSlice from '../Reducer/RevenueSlice';
 import UserEditorSlice from '../Reducer/UserEditorSlice';
 import PaymentSlice from '../Reducer/PaymentSlice';
+import ProfileSlice from '../Reducer/ProfileSlice'
 
 const store = configureStore({
   reducer: {
@@ -36,6 +37,7 @@ const store = configureStore({
     rev: RevenueSlice,
     usereditors: UserEditorSlice,
     paymentKey: PaymentSlice,
+    profile: ProfileSlice,
   },
   devTools: import.meta.env.DEV,
 });
