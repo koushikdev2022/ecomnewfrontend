@@ -46,6 +46,7 @@ const initialState = {
     error: "",
     message: "",
     profileDetail: {},
+    loadingPro: false,
 }
 
 const ProfileSlice = createSlice(
@@ -77,10 +78,10 @@ const ProfileSlice = createSlice(
                 })
 
                 .addCase(updateProfile.pending, (state) => {
-                    state.loading = true
+                    state.loadingPro = true
                 })
                 .addCase(updateProfile.fulfilled, (state, { payload }) => {
-                    state.loading = false
+                    state.loadingPro = false
                     state.error = ""
                     state.message =
                         payload !== undefined && payload.message
@@ -89,7 +90,7 @@ const ProfileSlice = createSlice(
                 })
                 .addCase(updateProfile.rejected, (state, { payload }) => {
                     state.error = true;
-                    state.loading = false;
+                    state.loadingPro = false;
                     state.message =
                         payload !== undefined && payload.message
                             ? payload.message

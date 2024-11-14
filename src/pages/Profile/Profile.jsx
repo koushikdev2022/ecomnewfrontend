@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const Profile = () => {
     const dispatch = useDispatch();
-    const { profileDetail } = useSelector((state) => state.profile);
+    const { profileDetail, loadingPro } = useSelector((state) => state.profile);
     console.log("profileDetail", profileDetail)
 
     const {
@@ -19,16 +19,6 @@ const Profile = () => {
         setValue,
         formState: { errors },
     } = useForm();
-
-    // const handleFileChange = (e) => {
-    //     const file = e.target.files[0];
-    //     if (file) {
-    //         setProfile((prevProfile) => ({
-    //             ...prevProfile,
-    //             profilePicture: URL.createObjectURL(file),
-    //         }));
-    //     }
-    // };
 
     useEffect(() => {
         dispatch(viewProfile()).then((res) => {
@@ -52,7 +42,9 @@ const Profile = () => {
     const onSubmit = (data) => {
         console.log("Data", data)
         const formData = new FormData();
-        formData.append("avatar", data?.avatara);
+        if (data?.avatar && data?.avatar[0]) {
+            formData.append("avatar", data.avatar[0]);
+        }
         formData.append("first_name", data?.first_name);
         formData.append("last_name", data?.last_name);
         formData.append("mobile", data?.mobile);
@@ -60,26 +52,26 @@ const Profile = () => {
         formData.append("email", data?.email);
         dispatch(updateProfile(formData)).then((res) => {
             console.log("Updated Res", res);
-            // if (res?.payload?.status_code === 200) {
-            //     toast.success(res?.payload?.message, {
-            //         position: "top-right",
-            //         autoClose: 5000,
-            //         hideProgressBar: false,
-            //         closeOnClick: true,
-            //         progress: undefined,
-            //         theme: "light",
-            //     });
-            //     dispatch(viewProfile());
-            // } else if (res?.payload?.response?.data?.data[0]?.message) {
-            //     toast.error(res?.payload?.response?.data?.data[0]?.message, {
-            //         position: "top-right",
-            //         autoClose: 5000,
-            //         hideProgressBar: false,
-            //         closeOnClick: true,
-            //         progress: undefined,
-            //         theme: "dark",
-            //     });
-            // }
+            if (res?.payload?.status_code === 200) {
+                toast.success(res?.payload?.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+                dispatch(viewProfile());
+            } else if (res?.payload?.response?.data?.data[0]?.message) {
+                toast.error(res?.payload?.response?.data?.data[0]?.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    progress: undefined,
+                    theme: "dark",
+                });
+            }
         });
 
     };
@@ -195,7 +187,7 @@ const Profile = () => {
                             type="submit"
                             className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                         >
-                            Save
+                            {loadingPro ? "Wait.." : "Save"}
                         </button>
                     </div>
                 </form>

@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {BiSolidUser, BiSolidContact, AiFillSetting, AiOutlineLogout } from "../assets/icons/index";
+import { BiSolidUser, BiSolidContact, AiFillSetting, AiOutlineLogout } from "../assets/icons/index";
 
 import UserOne from '../assets/imagesource/user/user-01.png';
 import { useDispatch } from 'react-redux';
 import { logout } from '../Reducer/AuthSlice';
 import { Base64 } from 'js-base64';
+import { viewProfile } from '../Reducer/ProfileSlice';
+import { useSelector } from 'react-redux';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+
+  const { profileDetail } = useSelector((state) => state.profile);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
@@ -40,17 +44,19 @@ const DropdownUser = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
-const dispatch=useDispatch()
+  const dispatch = useDispatch()
   const handleLogout = () => {
-  dispatch(logout())
+    dispatch(logout())
     navigate("/");
   };
-  const userName=localStorage.getItem('userType')
-  const decodedUserName=Base64.decode(userName)
-  const parseUserName=JSON.parse(decodedUserName)
+  const userName = localStorage.getItem('userType')
+  const decodedUserName = Base64.decode(userName)
+  const parseUserName = JSON.parse(decodedUserName)
 
-  
-  
+  useEffect(() => {
+    dispatch(viewProfile())
+  }, [dispatch]);
+
 
   return (
     <div className="relative">
@@ -68,13 +74,12 @@ const dispatch=useDispatch()
         </span>
 
         <span className="h-8 w-8 rounded-full">
-          <img src={UserOne} alt="User" />
+          <img src={profileDetail?.data?.avatar ? profileDetail?.data?.avatar : UserOne} alt="User" />
         </span>
 
         <svg
-          className={`hidden fill-current sm:block ${
-            dropdownOpen ? 'rotate-180' : ''
-          }`}
+          className={`hidden fill-current sm:block ${dropdownOpen ? 'rotate-180' : ''
+            }`}
           width="12"
           height="8"
           viewBox="0 0 12 8"
@@ -95,9 +100,8 @@ const dispatch=useDispatch()
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
-        className={`absolute right-0 mt-3 flex w-52 flex-col rounded-sm border border-stroke bg-white shadow-md ${
-          dropdownOpen === true ? 'block' : 'hidden'
-        }`}
+        className={`absolute right-0 mt-3 flex w-52 flex-col rounded-sm border border-stroke bg-white shadow-md ${dropdownOpen === true ? 'block' : 'hidden'
+          }`}
       >
         <ul className="flex flex-col gap-3 border-b border-stroke px-4 py-4">
           <li>
