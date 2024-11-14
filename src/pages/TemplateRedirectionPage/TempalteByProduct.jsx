@@ -245,14 +245,15 @@ const TemplateByProduct = () => {
       if (coupon) {
         coupon.style.display = "none";
       }
-
-      document.getElementById("couponOpen").onclick = function () {
-        coupon.style.display = "";
-        let couponOpen = document.getElementById("cpnLink");
-        if (couponOpen) {
-          couponOpen.style.display = "none";
-        }
-      };
+      if (document.getElementById("couponOpen")) {
+        document.getElementById("couponOpen").onclick = function () {
+          coupon.style.display = "";
+          let couponOpen = document.getElementById("cpnLink");
+          if (couponOpen) {
+            couponOpen.style.display = "none";
+          }
+        };
+      }
       let pricingElement = document.getElementById("pricingBoth");
       let couponElement = document.getElementById("couponList");
 

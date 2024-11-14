@@ -213,7 +213,7 @@ const NewUserEditor = () => {
 
          <div id="coupon" class="coupon-section bg-gray-100 px-[20px] pt-[20px] flex items-center justify-center rounded-b-lg relative top-[-50px]">
             <input id="coupon_code" type="text" placeholder="Coupon code" class="text-base w-full px-4 h-[50px] border text-sm border-gray-300 focus:outline-none rounded-full text-gray-700">
-            <a href="javascript:void(0)" id="applyCoupon" class="px-[40px] h-[50px] leading-[46px] text-base bg-[#1E2A78] text-white font-semibold rounded-full flex items-center justify-center absolute right-[20px]">
+            <a href="javascript:void(0)" id="applyCoupon" class="cursor-pointer px-[40px] h-[50px] leading-[46px] text-base bg-[#1E2A78] text-white font-semibold rounded-full flex items-center justify-center absolute right-[20px]">
             Apply
               <span class="ml-2">→</span>
             </a>
