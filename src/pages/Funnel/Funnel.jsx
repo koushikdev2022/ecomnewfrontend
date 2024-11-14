@@ -4,737 +4,422 @@ import { CiCirclePlus } from "react-icons/ci";
 import { FaPlus, FaPlusCircle } from "react-icons/fa";
 import { PiArrowBendLeftUpBold } from "react-icons/pi";
 import { RxCross2 } from "react-icons/rx";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 import grapesjs from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
-import "grapesjs/dist/grapes.min.js";
+import "../../assets/css/styles/main.css";
+import plugin from "grapesjs-typed";
+
 import "grapesjs-preset-webpage";
-import plugin from "grapesjs-preset-webpage";
-import basicPlugin from "grapesjs-blocks-basic";
-import gjsForms from "grapesjs-plugin-forms";
-import grapesjsScriptEditor from "grapesjs-script-editor";
-import grapesTabs from "grapesjs-tabs";
+
+import grapesjsBlocksBasic from "grapesjs-blocks-basic";
+import "grapesjs-preset-webpage";
+import grapesjsPluginForms from "grapesjs-plugin-forms";
+import thePlugin from "grapesjs-plugin-export";
+import tailwindComponent from "../tailwind";
+import customCodePlugin from "grapesjs-custom-code";
+import pluginTooltip from "grapesjs-tooltip";
+import grapesjsTabs from "grapesjs-tabs";
+import pluginCountdown from "grapesjs-component-countdown";
+import tailwind from "grapesjs-tailwind";
 import { useDispatch, useSelector } from "react-redux";
 import { paypalIcon, shirt, stripeIcon } from "../../assets/images/images";
 import axios from "axios";
 import CreateFunnelModal from "./CreateFunnelModal";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getProductList } from "../../Reducer/FunnelSlice";
 import CreateFunnelModalDownSell from "./CreateFunnelModalDownSell";
+import { saveHtmlCssJs } from "../../Reducer/EditorSlice";
+import { saveUserEditor } from "../../Reducer/UserEditorSlice";
 
 const Funnel = () => {
   const dispatch = useDispatch();
-  const userTokenData = JSON.parse(localStorage.getItem("ecomToken"));
-  let token = userTokenData && userTokenData.token ? userTokenData.token : null;
-  const [selectedCountry, setSelectedCountry] = useState();
-  let templateId;
-  // options json
-  const countryOptions = [
-    { value: "", text: "Select Country" },
-    { value: "ind", text: "India" },
-    { value: "aus", text: "Australia" },
-    { value: "uk", text: "United Kingdom" },
-    { value: "usa", text: "United States" },
-    { value: "ita", text: "Italy" },
-    { value: "ger", text: "Germany" },
-  ];
-  const stateOptions = [
-    { value: "", text: "Select State" },
-    { value: "and", text: "Andhra Pradesh" },
-    { value: "tel", text: "Telangana" },
-    { value: "tn", text: "Tamil Nadu" },
-    { value: "kar", text: "Karnataka" },
-    { value: "ker", text: "Kerala" },
-    { value: "up", text: "Uttar Pradesh" },
-  ];
-  const cityOptions = [
-    { value: "", text: "Select City" },
-    { value: "hyd", text: "Hyderabad" },
-    { value: "sec", text: "Secunderabad" },
-    { value: "che", text: "Chennai" },
-    { value: "ban", text: "Bangalore" },
-    { value: "koc", text: "Kochi" },
-    { value: "lko", text: "Lucknow" },
-  ];
+  //   const userTokenData = JSON.parse(localStorage.getItem("ecomToken"));
+  //   let token = userTokenData && userTokenData.token ? userTokenData.token : null;
 
-  const paymentImages = [
-    { imgAlt: "paypalIcon", imgSrc: paypalIcon, value: "paypal" },
-    { imgAlt: "stripeIcon", imgSrc: stripeIcon, value: "stripe" },
-  ];
+  //   const { loading } = useSelector((state) => state?.usereditors);
+  //   const [editor, setEditor] = useState(null);
+  //   // const location = useLocation();
+  //   // const productList = location?.state?.productType;
 
-  const orderDetails = {
-    product_image: shirt,
-    product_name: "Shirt",
-    order_id: "123AVDO45",
-    product_price: 100,
-    product_quantity: "1",
-    total_shipping: 100,
-    total_price: 100,
-  };
+  //   // console.log("Product list: ", productList);
 
-  useEffect(() => {
-    const editor = grapesjs.init({
-      container: "#gjs",
-      height: "700px",
-      width: "100%",
-      plugins: [
-        plugin,
-        basicPlugin,
-        gjsForms,
-        grapesjsScriptEditor,
-        grapesTabs,
-      ],
-      storageManager: {
-        type: "remote",
-        options: {
-          remote: {
-            onStore: (data) => {
-              console.log("data", data);
-            },
-            onLoad: (result) => {
-              console.log("result", result.data.data[0].data);
-              if (
-                result &&
-                result.data &&
-                result.data.data &&
-                Array.isArray(result.data.data) &&
-                result.data.data.length > 0
-              ) {
-                return result.data.data[0].data;
-              }
-            },
-          },
-        },
+  //   const params = useParams();
+  //   const id = params.id;
+  //   const pid = params.productid;
+  //   // useEffect(() => {
+  //   //   const stripeElement = document.getElementById("stripe-radio");
+  //   //   console.log("stripeElement", stripeElement);
+  //   // }, [dispatch, productList]);
+  //   // console.log(
+  //   //   "productList",
+  //   //   productList?.data?.[0].paymentProviders?.[0]?.provider_type
+  //   // );
 
-        stepsBeforeSave: 1,
-        id: "gjs-",
-        autosave: true,
-        storeComponents: true,
-        storeStyles: true,
-        storeHtml: true,
-        storeCss: true,
-        storeComponentsJson: true,
-        contentTypeJson: true,
-      },
-      assetManager: {
-        assets: [
-          "http://placehold.it/350x250/78c5d6/fff/image1.jpg",
-          {
-            type: "image",
-            src: "http://placehold.it/350x250/459ba8/fff/image2.jpg",
-            height: 350,
-            width: 250,
-            name: "displayName",
-          },
-          {
-            src: "http://placehold.it/350x250/79c267/fff/image3.jpg",
-            height: 350,
-            width: 250,
-            name: "displayName",
-          },
-        ],
-      },
-      deviceManager: {
-        devices: [
-          {
-            name: "Desktop",
-            width: "", // default size
-          },
-          {
-            id: "tablet",
-            name: "Tablet",
-            width: "768px",
-            widthMedia: "992px",
-          },
-          {
-            name: "Mobile",
-            width: "320px", // this value will be used on canvas width
-            widthMedia: "480px", // this value will be used in CSS @media
-          },
-        ],
-      },
-    });
+  //   useEffect(() => {
+  //     const editor = grapesjs.init({
+  //       container: "#gjs",
+  //       plugins: [
+  //         grapesjsBlocksBasic,
+  //         grapesjsPluginForms,
+  //         thePlugin,
+  //         tailwindComponent,
+  //         customCodePlugin,
+  //         plugin,
+  //         pluginTooltip,
+  //         grapesjsTabs,
+  //         pluginCountdown,
+  //         tailwind,
+  //       ],
+  //       pluginsOpts: {
+  //         grapesjsBlocksBasic: {
+  //           blocks: ["button", "image", "text", "form"],
+  //         },
+  //         grapesjsPluginForms: {},
+  //         thePlugin: {},
+  //         tailwindComponent: {},
+  //         customCodePlugin: {},
+  //         [plugin]: {},
+  //         [pluginTooltip]: {},
+  //         grapesjsTabs: {
+  //           // Add plugin-specific options here
+  //         },
+  //         [pluginCountdown]: {},
+  //         tailwind: {},
+  //       },
+  //     });
+  //     const blockManager = editor.BlockManager;
+  //     //coupon blockManager
+  //     blockManager.add("Coupons", {
+  //       label: "Coupons",
+  //       content: `
+  //       <div id="couponDiv" class="container mx-auto">
+  //             <div id="couponList" class="bg-gradient-to-br from-purple-600 to-indigo-600 text-white text-center py-10 px-20 rounded-lg shadow-md relative">
+  //                 <div id="couponLoop" class="flex items-center space-x-2 mb-6">
+  //                     <span id="cpnCode" class="couponCode border-dashed border text-white px-4 py-2 rounded-l">STEALDEAL20</span>
+  //                     <span id="cpnBtn" class="couponBtn border border-white bg-white text-purple-600 px-4 py-2 rounded-r cursor-pointer">Copy Code</span>
+  //                 </div>
 
-    editor.Storage.add("remote", {
-      async load() {
-        return await axios.get(
-          `https://ecomapi.bestworks.online/product/list-template/${templateId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Replace with your actual token
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      },
+  //             </div>
+  //             <input id="cName" class="couName w-80 px-4 py-2 rounded-lg border-2 bg-white text-purple-600 border-purple-600 placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-300" type="text" placeholder="Enter Your Coupon">
 
-      async store(data) {
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-        };
-        const bodyParameters = { data: data };
-        return axios.post(
-          `https://ecomapi.bestworks.online/product/save-template/${templateId}`,
-          bodyParameters,
-          config
-        );
-      },
-    });
+  //         </div>
+  //       `,
+  //     });
+  //     //pricing option blockManager
+  //     blockManager.add("pricing", {
+  //       label: "Pricing",
+  //       content: `
+  //  <div class="container mx-auto py-2 px-3" id="myContainer">
+  //   <h2 class="text-xl font-semibold text-left mb-4">Choose a pricing option</h2>
+  //   <div id="pricingBoth" class="grid grid-cols-2 gap-4">
+  //     <!-- Pricing Option 1 -->
+  //     <div class="text-center lg:text-left border lg:border-none rounded-lg lg:rounded-none shadow-md lg:shadow-none pb-2 lg:pb-0" id="oneTimeHide">
+  //       <label class="lg:border-2 lg:rounded-lg lg:shadow-md p-2 lg:p-4 lg:bg-white lg:hover:shadow-xl transition duration-300 ease-in-out cursor-pointer lg:flex justify-between items-center lg:min-h-[85px]">
+  //         <div class="pb-1 lg:pb-0">
+  //           <h3 id="annual_text" class="text-xs lg:text-lg font-medium lg:pr-2 pb-1 lg:pb-0">Annual - </h3>
+  //           <div id="annual_price" class="text-xs lg:text-2xl font-bold text-black">$200.00</div>
+  //         </div>
+  //         <input id="annual_opt" type="radio" name="pricingOption" value="annual" class="mr-0 mb-1 lg:mb-0 lg:mr-4 lg:h-5 lg:w-5 text-[#f56f46] focus:ring-[#f56f46] border-gray-300">
+  //       </label>
+  //     </div>
+  //     <!-- Pricing Option 2 -->
+  //     <div id="subscriptionHide" class="text-center lg:text-left border lg:border-none rounded-lg lg:rounded-none shadow-md lg:shadow-none pb-2 lg:pb-0">
+  //       <label class="lg:border-2 lg:rounded-lg lg:shadow-md p-2 lg:p-4 lg:bg-white lg:hover:shadow-xl transition duration-300 ease-in-out cursor-pointer lg:flex justify-between items-center lg:min-h-[85px]">
+  //          <div class="pb-1 lg:pb-0">
+  //           <h3 id="monthly_text" class="text-xs lg:text-lg font-medium lg:pr-2 pb-1 lg:pb-0">Monthly - </h3>
+  //           <div id="monthly_price" class="text-xs lg:text-2xl font-bold text-black">$130.00</div>
+  //         </div>
+  //         <input id="monthly_opt" type="radio" name="pricingOption" value="monthly" class="mr-0 mb-1 lg:mb-0 lg:mr-4 lg:h-5 lg:w-5 text-[#f56f46] focus:ring-[#f56f46] border-gray-300">
+  //       </label>
+  //     </div>
+  //   </div>
+  // </div>
 
-    // Commands
-    editor.Commands.add("set-device-desktop", {
-      run: (editor) => {
-        editor.setDevice("Desktop");
-        // editor.getModel().refresh();
-      },
-    });
-    editor.Commands.add("set-device-mobile", {
-      run: (editor) => {
-        editor.setDevice("Mobile");
-      },
-    });
+  //   `,
+  //     });
+  //     // blockManager.add("paymentMethods", {
+  //     //   label: "Payment Methods",
+  //     //   content: `
+  //     //     <div class="payment-methods-container bg-white p-6 rounded-lg shadow-md">
+  //     //       <h2 class="text-xl font-bold mb-4 text-gray-800">Choose Your Payment Method</h2>
 
-    // Add a custom save button
-    editor.Panels.addButton("options", {
-      id: "save-db",
-      className: "fa fa-floppy-o",
-      command: "save-db",
-      attributes: { title: "Save" },
-    });
+  //     //       <!-- Payment Methods Flex Container -->
+  //     //       <div class="flex flex-col md:flex-row gap-0 justify-between items-start">
 
-    // Define the save command
-    editor.Commands.add("save-db", {
-      run: (editor, sender) => {
-        sender && sender.set("active", 0); // turn off the button
-        editor.store();
-        console.log("HTML->", editor.getHtml());
-        const html = editor.getHtml();
-        const css = editor.getCss();
-        const js = editor.getJs();
-        console.log("js", js);
-        // handleNavigate(html, css, js);
-      },
-    });
+  //     //         <!-- PayPal Section -->
+  //     //         <div id="paypalSection" class="payment-method-paypal w-6/12">
+  //     //           <label class="flex items-center justify-center cursor-pointer py-4">
+  //     //             <input type="radio" name="payment" id="paypal-radio" value="paypal" class="mr-2 h-5 w-5 text-white focus:ring-white" onclick="togglePaymentMethod('paypal')">
+  //     //             <span class="text-[#454f59] font-medium">PayPal</span>
+  //     //           </label>
+  //     //         </div>
 
-    editor.BlockManager.add("my-select-id", {
-      label: "Country Select",
-      className: "",
-      content: {
-        type: "Select",
-        components: [
-          {
-            tagName: "Select",
-            attributes: {
-              class: "custom-select",
-            },
-            components: countryOptions.map((opt) => ({
-              key: opt.value,
-              type: "option",
-              tagName: "option",
-              attributes: { value: opt.value },
-              content: opt.text,
-            })),
-            script: function () {
-              let selectEl = this;
-              selectEl.addEventListener("change", (event) => {
-                const selectedCountry = event.target.value;
-                setSelectedCountry(selectedCountry);
-              });
-            },
-          },
-        ],
-        style: {
-          // color: 'red',
-        },
-      },
-    });
+  //     //         <!-- Stripe Section -->
+  //     //         <div id="stripeScetion" class="payment-method-stripe w-6/12">
+  //     //           <label class="flex items-center justify-center cursor-pointer py-4">
+  //     //             <input type="radio" name="payment" id="stripe-radio" value="stripe" class="mr-2 h-5 w-5 text-white focus:ring-white" onclick="togglePaymentMethod('stripe')">
+  //     //             <span class="text-[#454f59] font-medium">Stripe</span>
+  //     //           </label>
+  //     //         </div>
+  //     //       </div>
 
-    // Add custom select box component for state
-    editor.BlockManager.add("my-state-select-id", {
-      label: "State Select Box",
-      content: {
-        type: "Select",
-        components: [
-          {
-            tagName: "select",
-            attributes: { class: "custom-state-select" },
-            components: stateOptions.map((opt) => ({
-              type: "option",
-              tagName: "option",
-              attributes: { value: opt.value },
-              content: opt.text,
-            })),
-            // script: function () {
-            //   let el = this;
-            //   el.addEventListener('change', (event) => {
-            //     const selectedState = event.target.value;
-            //     setSelectedState(selectedState);
-            //   });
-            // },
-          },
-        ],
-        style: {
-          // color: 'red',
-        },
-      },
-    });
+  //     //       <!-- Card Element for Stripe -->
+  //     //       <div id="card-element-new" class="mt-0 bg-[#f5f7fa] px-6 py-8">
+  //     //       </div>
+  //     //       <div id="card-element-stripe" class="mt-0 bg-[#f5f7fa] px-6 py-8">
 
-    // Add custom select box component for city
-    editor.BlockManager.add("my-city-select-id", {
-      id: "my-city-select-id",
-      label: "City Select Box",
-      content: {
-        type: "Select",
-        components: [
-          {
-            tagName: "select",
-            attributes: {
-              class: "custom-city-select",
-            },
-            components: cityOptions.map((opt) => ({
-              key: opt.value,
-              type: "option",
-              tagName: "option",
-              attributes: { value: opt.value },
-              content: opt.text,
-            })),
-            // script: function () {
-            //   let el = this;
-            //   el.addEventListener('change', (event) => {
-            //     const selectedCity = event.target.value;
-            //     setSelectedCity(selectedCity);
-            //   });
-            // },
-          },
-        ],
-        style: {
-          // color: 'red',
-        },
-      },
-    });
+  //     //       </div>
 
-    // add custom payment image component
-    // Extend GrapesJS with custom block for image list
-    const generateImageBlocks = (images) => {
-      return images
-        .map(
-          (img, index) => `
-        <div className="gap-2">
-          <input type="radio" id="paymentImage" name="paymentType" value=${img.value} />
-          <label for="paymentImage" >
-            <img src="${img.imgSrc}" alt="${img.imgAlt}"  />
-          </label>
-        </div>`
-        )
-        .join("");
-    };
+  //     //     </div>
+  //     //   `,
+  //     //   category: "Payments",
+  //     // });
 
-    editor.BlockManager.add("my-payment-image-id", {
-      label: "Payment Image",
-      content: `
-        <div>
-          <h3>
-            Select Payment Type
-          </h3>
-          <div className="align-middle">
-            ${generateImageBlocks(paymentImages)}
-          </div>
-        </div>
-      `,
-      category: "Basic",
-      script: function () {
-        let paymentImageEl = this;
-        console.log("id of payment image", paymentImageEl.id);
-        // Select the radio button element by its ID
-        const paymentImageElement = document.getElementById(paymentImageEl.id);
-        console.log("paymentImageElement", paymentImageElement);
-        paymentImageEl.addEventListener("input", (event) => {
-          const inputValue = event.target.value;
-          setPaymentType(inputValue);
-        });
-      },
+  //     blockManager.add("paymentMethods", {
+  //       label: "Payment Methods",
+  //       content: `
+  //         <div class="payment-methods-container">
 
-      style: {
-        display: "flex",
-        textAlign: "center",
-      },
-    });
+  //           <!-- Payment Methods Flex Container -->
+  //           <div class="flex gap-0 justify-between items-start">
 
-    // Add custom order details component for order summary
-    editor.BlockManager.add("custom-order-details", {
-      label: "Order Details",
-      content: {
-        type: "order-details",
-        components: [
-          {
-            tagName: "div",
-            attributes: {
-              // class: 'flex',
-            },
-            style: {
-              display: "flex",
-              padding: "1%",
-              justifyContent: "space-between",
-              alignItems: "center",
-            },
-            components: [
-              {
-                tagName: "div",
-                attributes: {
-                  // class:
-                  //   'border border-[#22331D] w-24 h-24 rounded-lg flex justify-center items-center',
-                },
-                style: {
-                  // border: '1px solid #22331D',
-                  width: "20%",
-                  height: "60%",
-                  // borderRadius: '30%',
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  margin: "0 5% 0 0",
-                  padding: "0 0 0 0",
-                },
-                components: [
-                  {
-                    tagName: "img",
-                    attributes: {
-                      src: orderDetails.product_image,
-                      alt: "product_image",
-                    },
-                    style: {
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: "60px",
-                      border: "1px solid #22331D ",
-                    },
-                  },
-                ],
-              },
-              {
-                tagName: "div",
-                attributes: {
-                  // class: 'ml-4',
-                },
-                style: {
-                  margin: "0 0 0 0",
-                  padding: "0 0 0 0",
-                },
-                components: [
-                  {
-                    tagName: "h3",
-                    attributes: {
-                      // class: 'text-[#22331D] text-[20px] font-semibold',
-                    },
-                    style: {
-                      fontSize: "20px",
-                      fontWeight: "600",
-                      color: "#22331D",
-                      margin: "0 0 4px 0",
-                    },
-                    content: orderDetails.product_name,
-                  },
-                  {
-                    tagName: "p",
-                    attributes: {
-                      // class: 'text-[#22331D] text-sm font-semibold',
-                    },
-                    content: `ORDER ID : ${orderDetails.order_id}`,
-                    style: {
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      color: "#22331D",
-                      margin: "0 0 2px 0",
-                    },
-                  },
-                  {
-                    tagName: "p",
-                    attributes: {
-                      // class: 'text-[#22331D] text-base font-bold',
-                    },
-                    content: `$${orderDetails.product_price}`,
-                    style: {
-                      fontSize: "16px",
-                      fontWeight: "600",
-                      color: "#22331D",
-                      margin: "0 0 0 0",
-                    },
-                  },
-                ],
-              },
-              {
-                tagName: "div",
-                attributes: {
-                  // class: 'border border-[#D4D4D4] rounded-md px-2 py-1',
-                },
-                style: {
-                  border: "1px solid #D4D4D4",
-                  borderRadius: "5px",
-                  padding: "0 0 0 0",
-                  margin: "5% 0 12% 3%",
-                },
-                components: [
-                  {
-                    tagName: "button",
-                    attributes: {
-                      class: "text-black text-base font-medium",
-                      type: "button",
-                    },
-                    content: "-",
-                    style: {
-                      margin: "0 10px 0 0",
-                    },
-                    // script: {
-                    //   click: function () {
+  //             <!-- PayPal Section -->
+  //             <div id="paypalSection" class="payment-method-paypal w-6/12">
+  //               <label class="flex items-center justify-center cursor-pointer py-4">
+  //                 <input type="radio" name="payment" id="paypal-radio" value="paypal" class="mr-2 h-5 w-5 text-white focus:ring-white" onclick="togglePaymentMethod('paypal')">
+  //                 <span class="text-[#505963] text-base font-medium">PayPal</span>
+  //                  <img src="https://ecom.bestworks.cloud/img/paypal.png" alt="Paypal" class="ml-2 hidden md:block">
+  //               </label>
+  //             </div>
 
-                    //     let quantity = this.closest('span').textContent;
-                    //     if (quantity > 1) {
-                    //       quantity--;
-                    //       this.closest('span').textContent = quantity;
-                    //     }
-                    //   },
-                    // },
-                  },
-                  {
-                    tagName: "span",
-                    attributes: {
-                      class: "text-black text-base font-semibold mx-3",
-                    },
-                    content: orderDetails.product_quantity,
-                  },
-                  {
-                    tagName: "button",
-                    attributes: {
-                      class: "text-black text-base font-medium",
-                      type: "button",
-                    },
-                    content: "+",
-                    // script: {
-                    //   click: function () {
-                    //     let quantity = this.closest('span').textContent;
-                    //     quantity++;
-                    //     this.closest('span').textContent = quantity;
-                    //   },
-                    // },
-                    style: {
-                      margin: "0 0 0 10px",
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      category: "Basic",
-    });
+  //             <!-- Stripe Section -->
+  //             <div id="stripeScetion" class="payment-method-stripe w-6/12">
+  //               <label class="flex items-center justify-center cursor-pointer py-4">
+  //                 <input type="radio" name="payment" id="stripe-radio" value="stripe" class="mr-2 h-5 w-5 text-white focus:ring-white" onclick="togglePaymentMethod('stripe')">
+  //                 <span class="text-[#505963] text-base font-medium">Credit Card</span>
+  //                   <img src="https://ecom.bestworks.cloud/img/cards.svg" alt="Powered by Stripe" class="ml-2 hidden md:block">
+  //               </label>
+  //             </div>
+  //           </div>
+  //           <div class="bg-gray-100 rounded-xl">
+  //           <!-- Card Element for Stripe -->
+  //           <div id="card-element-new" class="mt-0 bg-gray-100 px-6 py-8">
+  //           </div>
+  //           <div id="card-element-stripe" class="mt-0 px-6 pt-8 bg-gray-100 relative top-[-60px]">
+  //           </div>
 
-    // Add custom functionality into built-in input box component
-    editor.Components.addType("input", {
-      isComponent: (el) => el.tagName === "INPUT",
-      model: {
-        defaults: {
-          script: function () {
-            let inputEl = this;
-            // console.log('id of input box', inputEl.id);
-            // Select the input element by its ID
-            const inputElement = document.getElementById(inputEl.id);
-            console.log("inputElement", inputElement);
+  //           <!-- Order Total Section -->
 
-            // Get the name attribute
-            const nameAttribute = inputElement.getAttribute("name");
-            console.log("nameAttribute", nameAttribute); // Outputs: lname
-            if (nameAttribute === "couponCheck") {
-              inputEl.addEventListener("blur", (event) => {
-                console.log("if couponcheck", nameAttribute);
-                handleCouponCheck();
-              });
-            }
+  //           <div class="order-total-section border-b border-[#d0d3d8] mt-0 flex justify-between items-center bg-gray-100 mx-[28px] py-[15px] relative top-[-50px]">
+  //             <span id="proName" class="text-[#454f59] text-[18px] font-normal">WP Rocket - Multi 10</span>
+  //             <span id="orderAmount" class="text-gray-900 text-[18px] font-normal">$199</span>
+  //           </div>
 
-            inputEl.addEventListener("input", (event) => {
-              console.log("input event listener", nameAttribute);
-              const inputValues = event.target.value;
-              console.log("inputValues", inputValues);
-              if (nameAttribute === "couponCheck") {
-                handleSetCouponData(inputValues);
-              }
-              // setInputValue(inputValues);
-              // setNameAttribute(nameAttribute);
-            });
-          },
-        },
-      },
-    });
+  //           <div class="order-total-section mt-0 flex justify-between items-center bg-gray-100 mx-[28px] py-[15px] relative top-[-50px]">
+  //             <span class="text-[#454f59] text-[18px] font-bold">Order Total</span>
+  //             <span id="orderAmount" class="text-gray-900 text-[18px] font-bold">$299</span>
+  //           </div>
 
-    // Add custom functionality into built-in radio button component
-    editor.Components.addType("radio", {
-      isComponent: (el) => el.tagName === "INPUT" && el.type === "radio",
-      model: {
-        defaults: {
-          script: function () {
-            let radioEl = this;
-            console.log("id of radio button", radioEl.id);
-            // Select the radio button element by its ID
-            const radioElement = document.getElementById(radioEl.id);
-            console.log("radioElement", radioElement);
+  //          <div id="coupon" class="coupon-section bg-gray-100 px-[20px] pt-[20px] flex items-center justify-center rounded-b-lg relative top-[-50px]">
+  //             <input id="coupon_code" type="text" placeholder="Coupon code" class="text-base w-full px-4 h-[50px] border text-sm border-gray-300 focus:outline-none rounded-full text-gray-700">
+  //             <a href="javascript:void(0)" id="applyCoupon" class="px-[40px] h-[50px] leading-[46px] text-base bg-[#1E2A78] text-white font-semibold rounded-full flex items-center justify-center absolute right-[20px]">
+  //             Apply
+  //               <span class="ml-2">→</span>
+  //             </a>
+  //           </div>
+  //           <div class="text-[#454f59] font-bold text-base text-center pt-0 pb-4 flex items-center justify-center">
+  //              <img src="https://ecom.bestworks.cloud/img/doller_n_icon.png" alt="Powered by Stripe" class="mr-1">
+  //              Payment is in USD.
+  //           </div>
 
-            // Get the name attribute
-            const nameAttribute = radioElement.getAttribute("name");
-            console.log(nameAttribute); // Outputs: paymentType
+  //         </div>
+  //         <div class="text-sm lg:text-base text-[#454f59] pt-4 pl-2" id="cpnLink">
+  //             Got a coupon? <a href="javascript:void(0)" id="couponOpen" class="text-[#454f59] font-bold underline cursor-pointer hover:text-[#f56f46]">Click here to enter your code</a>
+  //           </div>
+  //         </div>
+  //       `,
+  //       category: "Payments",
+  //     });
 
-            radioEl.addEventListener("change", (event) => {
-              console.log("radioEl name", event.target.nodeName);
-              const selectedPaymentType = event.target.value;
-              console.log("selectedPaymentType", selectedPaymentType);
-              setPaymentType(selectedPaymentType);
-            });
-          },
-        },
-      },
-    });
+  //     blockManager.add("paymentMethods2", {
+  //       label: "Payment Methods2",
+  //       content: `
+  //         <div class="payment-methods-container p-3 bg-white">
 
-    // Add custom functionality into built-in checkbox component
-    editor.Components.addType("checkbox", {
-      isComponent: (el) => el.tagName === "INPUT" && el.type === "checkbox",
-      model: {
-        defaults: {
-          script: function () {
-            let checkboxEl = this;
-            // console.log('id of checkbox', checkboxEl.id);
-            // Select the checkbox element by its ID
-            const checkboxElement = document.getElementById(checkboxEl.id);
-            // console.log('checkboxElement', checkboxElement);
+  //         <div class="flex justify-between items-center">
+  //           <h2 class="text-xl font-bold mb-4 text-gray-800">Total:</h2>
+  //           <div id="orderAmount" class="text-2xl font-bold text-right mb-4">$1,599.99</div>
+  //         </div>
 
-            // Get the name attribute
-            const nameAttribute = checkboxElement.getAttribute("name");
-            // console.log(nameAttribute); // Outputs: terms
+  //           <!-- Payment Methods Section -->
+  //           <div class="flex flex-col gap-4">
 
-            checkboxEl.addEventListener("change", (event) => {
-              // console.log('checkboxEl name', event.target.nodeName);
-              const isChecked = event.target.checked;
-              // console.log('isChecked', isChecked);
-            });
-          },
-        },
-      },
-    });
+  //             <!-- Credit or Debit Card Section -->
+  //             <div class="bg-[#f9f9f9] rounded-lg">
+  //               <div id="stripeScetion" class="payment-method-stripe p-6 rounded-b-lg cursor-pointer">
+  //                 <label class="flex items-center gap-4">
+  //                   <input type="radio" name="payment" id="stripe-radio" value="stripe" class="h-5 w-5 text-gray-800" onclick="togglePaymentMethod('stripe')">
+  //                   <span class="text-gray-800 font-medium">Pay with credit or debit card</span>
+  //                   <img src="https://ecom.bestworks.cloud/img/cards.svg" alt="Powered by Stripe" class="ml-auto">
+  //                 </label>
+  //                 <p class="text-sm text-gray-500 mt-2">This is a secure 128-bit SSL encrypted payment</p>
 
-    // Add custom functionality into built-in textarea component
-    editor.Components.addType("textarea", {
-      isComponent: (el) => el.tagName === "TEXTAREA",
-      model: {
-        defaults: {
-          script: function () {
-            let textareaEl = this;
-            console.log("id of textarea", textareaEl.id);
-            // Select the textarea element by its ID
-            const textareaElement = document.getElementById(textareaEl.id);
-            console.log("textareaElement", textareaElement);
+  //               </div>
+  //               <div id="card-element-stripe" class="mt-8 px-6 py-8 relative top-[-30px]">
+  //               </div>
+  //             </div>
 
-            // Get the name attribute
-            const nameAttribute = textareaElement.getAttribute("name");
-            console.log(nameAttribute); // Outputs: address
+  //             <!-- Pay with PayPal Section -->
+  //             <div class="bg-[#f9f9f9] rounded-lg">
+  //               <div id="paypalSection" class="payment-method-paypal p-6 rounded-b-lg cursor-pointer">
+  //                 <label class="flex items-center gap-4">
+  //                   <input type="radio" name="payment" id="paypal-radio" value="paypal" class="h-5 w-5 text-gray-800" onclick="togglePaymentMethod('paypal')">
+  //                   <span class="text-gray-800 font-medium">Pay with PayPal</span>
+  //                     <img src="https://ecom.bestworks.cloud/img/paypal.png" alt="Paypal" class="ml-auto">
+  //                 </label>
+  //                 <p class="text-sm text-gray-500 mt-2">Secure and easy transactions with PayPal</p>
+  //               </div>
+  //               <div id="card-element-new" class="mt-0 px-6 py-8">
+  //               </div>
+  //               </div>
+  //             </div>
 
-            textareaEl.addEventListener("input", (event) => {
-              console.log("textareaEl name", event.target.nodeName);
-              const inputValue = event.target.value;
-              console.log("inputValue", inputValue);
-            });
-          },
-        },
-      },
-    });
+  //           <!-- Order Total Section -->
 
-    // Add custom functionality into built-in link component
-    editor.Components.addType("link", {
-      // isComponent: (el) => console.log('el-->>>', el),
-      model: {
-        defaults: {
-          script: function () {
-            let linkEl = this;
-            console.log("id of link", linkEl.id);
-            // Select the link element by its ID
-            const linkElement = document.getElementById(linkEl.id);
-            console.log("linkElement", linkElement);
+  //         </div>
+  //       `,
+  //       category: "Payments",
+  //     });
 
-            // Get the name attribute
-            const nameAttribute = linkElement.getAttribute("name");
-            console.log(nameAttribute); // Outputs: link
+  //     blockManager.add("cartOption", {
+  //       label: "Cart Option",
+  //       content: `
 
-            linkEl.addEventListener("click", (event) => {
-              console.log("linkEl name", event.target.nodeName);
-              const linkValue = event.target.href;
-              console.log("linkValue", linkValue);
-              setLink(linkValue);
-            });
-          },
-        },
-      },
-    });
+  // <div class="py-10" id="cart_wrap">
+  //             <div class="w-full lg:6/12" id="cart_wrap_main">
+  //               <div
+  //                 class="rounded-lg shadow-lg px-4 pt-6 pb-2"
+  //                 id="cart_wrap_main_area"
+  //               >
+  //                 <h2 class="text-xl text-[#313131] font-bold pb-4">Cart</h2>
+  //                 <div class="pt-4" id="cart_wrap_main_cont">
+  //                   <div
+  //                     class="bg-[#f9f9f9] rounded-b-lg py-2 px-3 flex justify-between items-center"
+  //                     id="cart_wrap_price_bar"
+  //                   >
+  //                     <div
+  //                       class="w-9/12 text-sm text-[#bab8b8] font-medium"
+  //                       id="cart_wrap_price_bar_name"
+  //                     >
+  //                       Product name
+  //                     </div>
+  //                     <div
+  //                       class="w-3/12 text-sm text-[#bab8b8] font-medium"
+  //                       id="cart_wrap_price_bar_price"
+  //                     >
+  //                       Price
+  //                     </div>
+  //                   </div>
+  //                   <div class="pt-5" id="cart_wrap_name_list">
+  //                     <div
+  //                       class="pb-4 px-3 flex justify-between items-center"
+  //                       id="cart_wrap_name_list_left"
+  //                     >
+  //                       <div
+  //                         class="w-9/12 text-sm text-[#313131] font-medium"
+  //                         id="cart_wrap_name_list_left_name"
+  //                       >
+  //                         Amazon Seller's Bundle
+  //                       </div>
+  //                       <div
+  //                         class="w-3/12 text-sm text-[#313131] font-medium"
+  //                         id="cart_wrap_name_list_left_price"
+  //                       >
+  //                         $ 1,599.99
+  //                       </div>
+  //                     </div>
+  //                   </div>
+  //                   <div
+  //                     class="pb-4 px-3 border-t-4 border-[#efefef] pt-2.5"
+  //                     id="cart_wrap_price_list_total"
+  //                   >
+  //                     <div
+  //                       class="flex justify-between items-center"
+  //                       id="cart_wrap_price_list_total_wrap"
+  //                     >
+  //                       <div
+  //                         class="w-9/12 text-base text-[#313131] font-extrabold"
+  //                         id="cart_wrap_price_list_total_wrap_price_name"
+  //                       >
+  //                         Total:
+  //                       </div>
+  //                       <div
+  //                         class="w-3/12 text-base text-[#313131] font-bold"
+  //                         id="cart_wrap_price_list_total_wrap_price_price"
+  //                       >
+  //                         $ 1,599.99
+  //                       </div>
+  //                     </div>
+  //                   </div>
+  //                 </div>
+  //               </div>
+  //             </div>
+  //           </div>
+  //       `,
+  //       category: "Cart",
+  //     });
 
-    // Add custom functionality into built-in text box component
-    editor.Components.addType("text", {
-      isComponent: (el) => el.tagName === "TEXT",
-      model: {
-        defaults: {
-          script: function () {
-            let textEl = this;
-            console.log("id of text", textEl.id);
-            // Select the text element by its ID
-            const textElement = document.getElementById(textEl.id);
-            // console.log('textElement payel', textElement);
+  //     const saveBtn = document.getElementById("save-button");
+  //     saveBtn.addEventListener("click", () => {
+  //       const html = editor?.getHtml();
+  //       const css = editor?.getCss();
+  //       const js = editor?.getJs();
+  //       const payload = {
+  //         product_id: Number(pid),
+  //         html: {
+  //           content: html,
+  //         },
+  //         css: {
+  //           styles: css,
+  //         },
+  //         javascript: {
+  //           scripts: js,
+  //         },
+  //       };
+  //       dispatch(saveHtmlCssJs(payload)).then((res) => {
+  //         console.log("save Response: ", res);
+  //       });
+  //     });
+  //     setEditor(editor);
+  //   }, []);
 
-            // Get the name attribute
-            const nameAttribute = textElement.getAttribute("name");
-            // console.log('payel', nameAttribute); // Outputs: text
+  //   let parseData;
+  //   useEffect(() => {
+  //     parseData = localStorage.getItem("gjsProject");
+  //   }, []);
 
-            console.log("nameAttribute", nameAttribute);
+  //   const handleSubmit1 = () => {
+  //     parseData = localStorage.getItem("gjsProject");
+  //     dispatch(saveUserEditor({ data: parseData, id: id, pid: pid })).then(
+  //       (res) => {
+  //         console.log("Res", res);
+  //         if (res?.payload?.status_code === 200) {
+  //           toast.success(res?.payload?.message, {
+  //             position: "top-right",
+  //             autoClose: 5000,
+  //             hideProgressBar: false,
+  //             closeOnClick: true,
+  //             progress: undefined,
+  //             theme: "light",
+  //           });
+  //         }
+  //       }
+  //     );
+  //   };
 
-            textEl.addEventListener("input", (event) => {
-              setNameAttribute(nameAttribute);
-            });
-          },
-        },
-      },
-    });
-
-    // Add custom functionality into built-in button component
-    editor.Components.addType("button", {
-      isComponent: (el) => el.tagName === "BUTTON",
-      model: {
-        defaults: {
-          script: function () {
-            let btnEl = this;
-            const btnElementId = document.getElementById(btnEl.id);
-
-            const nameAttribute = btnElementId.getAttribute("name");
-            btnEl.addEventListener("click", (event) => {
-              handleSubmit();
-            });
-          },
-        },
-      },
-    });
-
-    // Add custom line component
-    editor.BlockManager.add("my-line-id", {
-      label: "Line",
-      content: {
-        tagName: "hr",
-        attributes: {
-          class: "line",
-        },
-        style: {
-          width: "100%",
-          height: "4px",
-          colour: "#fbfbfb",
-        },
-      },
-      category: "Basic",
-    });
-  }, [dispatch]);
   const [openFunnelModal, setOpenFunnelModal] = useState(false);
   const [opneDownSellModal, setOpenDownSellModal] = useState(false);
   const { singleProduct } = useSelector((state) => state?.funnels);
@@ -804,17 +489,17 @@ const Funnel = () => {
           </Dropdown>
         </div>
       </div>
-      <div id="gjs" className=".gjs-row">
-        <div className="panel__top">
-          <div className="panel__basic-actions"></div>
-          <div
-            className="panel__devices"
-            style={{
-              position: "initial",
-            }}
-          ></div>
-          <div className="panel__switcher"></div>
+      <div className="checkout_editor_area">
+        <div className="flex justify-end">
+          <button
+            id="save-button"
+            // onClick={handleSubmit1}
+            className="bg-[#024e70] hover:bg-[#00b1ff] px-5 py-1.5 mb-2 text-white text-sm font-medium flex justify-center items-center rounded-md"
+          >
+            Save
+          </button>
         </div>
+        <div id="gjs"></div>
       </div>
 
       {setOpenFunnelModal && (
