@@ -1,7 +1,46 @@
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPasswordIcon, logo } from "../../../assets/images/images";
+import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
+import { forgotPassword } from "../../../Reducer/AuthSlice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ForgotPassword = () => {
+  const dispatch = useDispatch();
+  const baseURL = window.location.origin;
+  console.log("URL", baseURL);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
+  const onSubmit = (data) => {
+    dispatch(forgotPassword({ ...data, base_url: baseURL })).then((res) => {
+      console.log("Res: ", res);
+      if (res?.payload?.status_code === 200) {
+        toast.success(res?.payload?.message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        toast.error(res?.payload?.message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    });
+  };
   return (
     <div className="my-0 md:my-16 lg:my-0 mx-4 lg:mx-0 flex justify-center items-center h-screen">
       <div className="w-full max-w-lg my-0 mx-auto">
@@ -15,14 +54,18 @@ const ForgotPassword = () => {
           No worries, we got you covered.
         </p>
         <div className="login_area">
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-6">
               <input
                 type="email"
                 id="email"
                 className="bg-white border border-[#4abef1] text-[#888888] text-base rounded-xl focus:ring-[#009BF2] focus:border-[#4abef1] block w-full py-4 px-3"
                 placeholder="Enter your email address"
+                {...register("email", { required: true })}
               />
+              {errors?.email && (
+                <h6 className="text-red-600">Email is Required</h6>
+              )}
             </div>
             <button
               type="submit"

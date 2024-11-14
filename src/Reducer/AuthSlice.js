@@ -75,11 +75,12 @@ export const login = createAsyncThunk(
         }
     }
 )
+
 export const forgotPassword = createAsyncThunk(
     'auth/forgotPassword',
     async (userInput, { rejectWithValue }) => {
         try {
-            const response = await api.post('api/forgot-password', userInput);
+            const response = await api.post('/forget-password', userInput);
             if (response?.data?.status_code === 200) {
                 return response.data;
             } else {
@@ -93,9 +94,9 @@ export const forgotPassword = createAsyncThunk(
 )
 export const resetPassword = createAsyncThunk(
     'auth/resetPawwrod',
-    async ({ userInput, token }, { rejectWithValue }) => {
+    async (userInput, { rejectWithValue }) => {
         try {
-            const response = await api.post('api/reset-password', userInput, { headers: { Authorization: `Bearer ${token}` } });
+            const response = await api.post('forget-password/reset-password', userInput);
             if (response?.data?.status_code === 200) {
                 return response.data;
             } else {
@@ -151,6 +152,7 @@ const initialState = {
     isLoggedIn: false,
     currentUser: {},
     subdomain: [],
+
 }
 
 
