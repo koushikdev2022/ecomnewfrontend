@@ -246,8 +246,8 @@ const Editor = () => {
         <div class="payment-methods-container p-3 bg-white">
           
         <div class="flex justify-between items-center">
-          <h2 class="text-xl font-bold mb-4 text-gray-800">Total:</h2>
-          <div id="orderAmount" class="text-2xl font-bold text-right mb-4">$1,599.99</div>
+          <h2 class="text-xl font-semibold mb-4 text-gray-800">Total:</h2>
+          <div id="orderAmount" class="text-xl font-semibold text-right mb-4">$1,599.99</div>
         </div>
     
           <!-- Payment Methods Section -->
@@ -264,7 +264,7 @@ const Editor = () => {
                 <p class="text-sm text-gray-500 mt-2">This is a secure 128-bit SSL encrypted payment</p>
               
               </div>
-              <div id="card-element-stripe" class="mt-8 px-6 py-8 relative top-[-30px]">
+              <div id="card-element-stripe" class="mt-8 px-6 pt-8 relative top-[-30px]">
               </div>
             </div>
             

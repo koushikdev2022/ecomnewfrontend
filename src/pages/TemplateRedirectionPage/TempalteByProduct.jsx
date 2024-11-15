@@ -343,6 +343,27 @@ const TemplateByProduct = () => {
         // if (cardElement) {
         //   cardElement.classList.remove("stripe_design");
         // }
+        const iwjyi = document.getElementById("iwjyi");
+
+        const i7i6f = document.getElementById("i7i6f");
+
+        if (i7i6f) {
+          i7i6f.style.display = "none";
+        }
+        if (iwjyi) {
+          iwjyi.style.display = "none";
+        }
+
+        const ilr2bElement = document.getElementById("ilr2b");
+
+        if (ilr2bElement) {
+          // Check if height is currently set to '240px' or 'auto'
+          const currentHeight = ilr2bElement.style.getPropertyValue("height");
+
+          // Toggle between 'auto' and '240px'
+
+          ilr2bElement.style.setProperty("height", "auto", "important");
+        }
 
         document.getElementById("card-element-stripe").style.display = "none";
         document.getElementById("card-element-new").style.display = "block";
@@ -417,6 +438,26 @@ const TemplateByProduct = () => {
       };
 
       document.getElementById("stripe-radio").onclick = function () {
+        const iwjyi = document.getElementById("iwjyi");
+        const i7i6f = document.getElementById("i7i6f");
+        if (i7i6f) {
+          i7i6f.style.display = "";
+        }
+
+        if (iwjyi) {
+          iwjyi.style.display = "";
+        }
+        const ilr2bElement = document.getElementById("ilr2b");
+
+        if (ilr2bElement) {
+          // Check if height is currently set to '240px' or 'auto'
+          const currentHeight = ilr2bElement.style.getPropertyValue("height");
+
+          // Toggle between 'auto' and '240px'
+          if (window.matchMedia("(max-width: 480px)").matches) {
+            ilr2bElement.style.setProperty("height", "240px", "important");
+          }
+        }
         setTimeout(() => {
           const cardTab = document.querySelector(".p-PaymentMethodSelector");
           if (cardTab) cardTab.style.display = "none";
