@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL });
 let domain = window.location.origin
-const formDataURL = ['product/add-product-images'];
+const formDataURL = ['product/add-product-images', '/user/update-profile'];
 api.interceptors.request.use((req) => {
   let userTokenData;
   try {

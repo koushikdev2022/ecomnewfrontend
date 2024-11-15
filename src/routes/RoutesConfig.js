@@ -37,6 +37,7 @@ import TemplateByProduct from '../pages/TemplateRedirectionPage/TempalteByProduc
 // import StripeProviderComponent from '../pages/TemplateRedirectionPage/StripeProviderComponent.jsx';
 import PaymentRedirect from '../pages/TemplateRedirectionPage/PaymentRedirect.jsx';
 import MiddlePage from '../pages/TemplateRedirectionPage/MiddlePage.jsx';
+import Profile from '../pages/Profile/Profile.jsx';
 import ResetPassword from '../pages/Auth/ForgotPassword/ResetPassword.jsx';
 
 
@@ -121,6 +122,17 @@ const allRoutes = [
       {
         index: true,
         element: <Settings />,
+      },
+    ],
+  },
+
+  {
+    path: '/profile',
+    element: <InsideLayout />,
+    children: [
+      {
+        index: true,
+        element: <Profile />,
       },
     ],
   },

@@ -160,9 +160,10 @@ const ProductSlice = createSlice(
         initialState,
         reducers: {},
         extraReducers: (builder) => {
-            builder.addCase(getProductCategory.pending, (state) => {
-                state.loading = true
-            })
+            builder
+                .addCase(getProductCategory.pending, (state) => {
+                    state.loading = true
+                })
                 .addCase(getProductCategory.fulfilled, (state, { payload }) => {
                     state.loading = false
                     state.productCategory = payload
